@@ -10,65 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <style>
-        .sidebar {
-            min-height: 100vh;
-            background: linear-gradient(180deg, #2c3e50 0%, #3498db 100%);
-            color: white;
-        }
-        .sidebar .nav-link {
-            color: #ecf0f1;
-            padding: 12px 20px;
-            margin: 4px 0;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-        .sidebar .nav-link:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            transform: translateX(5px);
-        }
-        .sidebar .nav-link.active {
-            background-color: #e74c3c;
-            color: white;
-        }
-        .sidebar .nav-link i {
-            width: 20px;
-            margin-right: 10px;
-        }
-        .stats-card {
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-        .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        .seccion {
-            animation: fadeIn 0.5s ease-in;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .table-hover tbody tr:hover {
-            background-color: rgba(52, 152, 219, 0.1);
-        }
-        .badge-estado {
-            font-size: 0.8em;
-            padding: 6px 12px;
-            border-radius: 20px;
-        }
-        .filtros-container {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
+
 </head>
 <body>
     <div class="container-fluid">
@@ -105,6 +48,11 @@
                         <li class="nav-item">
                             <a class="nav-link" href="#" onclick="mostrarSeccion('ventas')">
                                 <i class="bi bi-cart-check"></i> Ventas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="mostrarSeccion('compras')">
+                                <i class="bi bi-cart-check"></i> Compras
                             </a>
                         </li>
                         <li class="nav-item">
@@ -225,10 +173,13 @@
                         <div class="col-md-8">
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Ventas de los Últimos 7 Días</h6>
+                                    <h6 class="m-0 font-weight-bold text-primary" id="tituloTopClientes">Top Clientes</h6>
                                 </div>
                                 <div class="card-body">
-                                    <canvas id="chartVentasRecientes" width="400" height="200"></canvas>
+                                    <div class="table-responsive" id="topClientesContainer">
+                                        <!-- El top 10 de clientes se renderizará aquí -->
+                                        <p class="text-center text-muted">No hay datos de ventas para mostrar.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -287,7 +238,7 @@
                                             <th>Nombre</th>
                                             <th>Email</th>
                                             <th>Teléfono</th>
-                                            <th>Dirección</th>
+                                            <th>Tipo</th>
                                             <th>Fecha Registro</th>
                                             <th>Acciones</th>
                                         </tr>
@@ -365,7 +316,6 @@
                                         <tr>
                                             <th>Nombre</th>
                                             <th>Descripción</th>
-                                            <th>Precio</th>
                                             <th>Stock</th>
                                             <th>Categoría</th>
                                             <th>Fecha Creación</th>
@@ -460,6 +410,85 @@
                                                 <p class="mt-2">No hay ventas registradas</p>
                                                 <button class="btn btn-primary" onclick="mostrarModalVenta()">
                                                     <i class="bi bi-plus"></i> Registrar Primera Venta
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                                <!-- ===== COMPRAS ===== -->
+                <div id="compras" class="seccion" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">
+                            <i class="bi bi-cart-plus text-success"></i>
+                            Gestión de Compras
+                        </h1>
+                        <button class="btn btn-primary" onclick="mostrarModalCompra()">
+                            <i class="bi bi-plus-circle"></i> Nueva Compra
+                        </button>
+                    </div>
+
+                    <!-- Filtros de Compras -->
+                    <div class="filtros-container">
+                        <h6 class="mb-3">
+                            <i class="bi bi-calendar-range"></i> Filtrar por Fechas
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Fecha Inicio</label>
+                                <input type="date" class="form-control" id="fechaInicioCompra">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Fecha Fin</label>
+                                <input type="date" class="form-control" id="fechaFinCompra">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Proveedor</label>
+                                <input type="text" class="form-control" id="filtroProveedor" placeholder="Nombre del proveedor...">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" onclick="filtrarCompras()">
+                                        <i class="bi bi-filter"></i> Aplicar Filtros
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="limpiarFiltrosCompras()">
+                                        <i class="bi bi-arrow-clockwise"></i> Limpiar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Compras -->
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha Compra</th>
+                                            <th>Proveedor</th>
+                                            <th>Productos</th>
+                                            <th>Subtotal</th>
+                                            <th>IVA</th>
+                                            <th>Total</th>
+                                            <th>Estado</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaCompras">
+                                        <!-- Los datos se cargarán aquí dinámicamente -->
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted py-4">
+                                                <i class="bi bi-cart-plus display-4"></i>
+                                                <p class="mt-2">No hay compras registradas</p>
+                                                <button class="btn btn-primary" onclick="mostrarModalCompra()">
+                                                    <i class="bi bi-plus"></i> Registrar Primera Compra
                                                 </button>
                                             </td>
                                         </tr>
@@ -625,10 +654,21 @@
                                     <input type="tel" class="form-control" id="clienteTelefono">
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Dirección</label>
-                                    <input type="text" class="form-control" id="clienteDireccion">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Cliente:</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="tipoCliente" id="tipoMaster" value="Master" checked>
+                                    <label class="form-check-label" for="tipoMaster">
+                                        Master
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="tipoCliente" id="tipoRevenda" value="Revenda">
+                                    <label class="form-check-label" for="tipoRevenda">
+                                        Revenda
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -687,17 +727,9 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label class="form-label">Precio *</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">$</span>
-                                        <input type="number" class="form-control" id="productoPrecio" step="0.01" required>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
                                     <label class="form-label">Stock Inicial</label>
-                                    <input type="number" class="form-control" id="productoStock" value="0">
+                                    <input type="number" class="form-control" id="productoStock" value="0" min="0">
+                                    <small class="text-muted">Cantidad disponible inicialmente</small>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -771,6 +803,15 @@
                                             <input type="number" class="form-control" id="productoCantidad" value="1" min="1">
                                         </div>
                                         <div class="col-md-3">
+                                            <label class="form-label">Precio Venta</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="productoPrecioVenta" 
+                                                    step="0.01" min="0.01" placeholder="Precio unitario...">
+                                            </div>
+                                            <small class="text-muted">Dejar vacío para usar precio original</small>
+                                        </div>
+                                        <div class="col-md-3">
                                             <label class="form-label">&nbsp;</label>
                                             <button class="btn btn-primary w-100" onclick="agregarProductoVenta()">
                                                 <i class="bi bi-plus-lg"></i> Agregar
@@ -821,15 +862,130 @@
         </div>
     </div>
 
+        <!-- Modal Compra -->
+    <div class="modal fade" id="modalCompra" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-cart-plus"></i>
+                        Nueva Compra
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <!-- Datos del Proveedor -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-building"></i> Datos del Proveedor
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <form id="formCompra">
+                                        <div class="row g-3">
+                                            <div class="col-md-8">
+                                                <label class="form-label">Proveedor *</label>
+                                                <input type="text" class="form-control" id="compraProveedor" required placeholder="Nombre del proveedor...">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">N° Factura</label>
+                                                <input type="text" class="form-control" id="compraNumeroFactura" placeholder="Número de factura...">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Agregar Productos -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-box-seam"></i> Agregar Productos
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-5">
+                                            <label class="form-label">Producto</label>
+                                            <select class="form-select" id="productoSelectCompra">
+                                                <option value="">Seleccionar producto...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Cantidad</label>
+                                            <input type="number" class="form-control" id="productoCantidadCompra" value="1" min="1">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Precio Unitario</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="productoPrecioCompra" step="0.01" min="0.01" placeholder="0.00">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label class="form-label">&nbsp;</label>
+                                            <button class="btn btn-primary w-100" onclick="agregarProductoCompra()">
+                                                <i class="bi bi-plus-lg"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <!-- Resumen de Compra -->
+                            <div class="card sticky-top" style="top: 20px;">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-receipt"></i> Resumen de Compra
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="listaProductosCompra" class="mb-3">
+                                        <p class="text-muted text-center">No hay productos agregados</p>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong>Subtotal:</strong>
+                                        <span id="subtotalCompra">$0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong>IVA (21%):</strong>
+                                        <span id="ivaCompra">$0.00</span>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between align-items-center fs-5 fw-bold">
+                                        <strong>TOTAL:</strong>
+                                        <span id="totalCompra" class="text-success">$0.00</span>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button class="btn btn-success w-100" onclick="guardarCompra()">
+                                        <i class="bi bi-check-lg"></i> Registrar Compra
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script type="module" src="/app.js"></script>
+    <script type="module" src="scripts/app.js"></script>
 
     <!-- Scripts de la aplicación -->
-    <script type="module" src="/dashboard.js"></script>
-    <script type="module" src="/clientes.js"></script>
-    <script type="module" src="/productos.js"></script>
-    <script type="module" src="/ventas.js"></script>
-    <script type="module" src="/reportes.js"></script>
+    <script type="module" src="scripts/dashboard.js"></script>
+    <script type="module" src="scripts/clientes.js"></script>
+    <script type="module" src="scripts/productos.js"></script>
+    <script type="module" src="scripts/ventas.js"></script>
+    <script type="module" src="scripts/compras.js"></script>
+    <script type="module" src="scripts/reportes.js"></script>
 </body>
 </html>
