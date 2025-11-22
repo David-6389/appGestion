@@ -395,6 +395,7 @@ async function guardarVenta() {
                 subtotal: ventaEnCurso.subtotal,
                 iva: ventaEnCurso.iva,
                 total: ventaEnCurso.total,
+                user_id: estadoApp.datos.usuario.id, // <-- AÑADIR ID DEL USUARIO
                 estado: 'completada'
             },
             items: ventaEnCurso.productos.map(p => ({

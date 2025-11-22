@@ -254,6 +254,7 @@ async function guardarCompra() {
                 subtotal: compraEnCurso.subtotal,
                 iva: compraEnCurso.iva,
                 total: compraEnCurso.total,
+                user_id: estadoApp.datos.usuario.id, // <-- AÑADIR ID DEL USUARIO
                 estado: 'completada'
             },
             items: compraEnCurso.productos.map(p => ({

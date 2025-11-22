@@ -114,6 +114,7 @@ export async function guardarProducto() {
         stock: parseInt(document.getElementById('productoStock').value) || 0,
         unidad_medida: document.getElementById('productoUnidad').value,
         activo: true,
+        user_id: estadoApp.datos.usuario.id, // <-- AÑADIR ID DEL USUARIO
         fecha_creacion: new Date().toISOString()
     };
 
@@ -129,6 +130,8 @@ export async function guardarProducto() {
         
         if (productoEditandoId) {
             // Modo edición
+            delete producto.fecha_creacion;
+            delete producto.user_id;
             productoGuardado = await productosAPI.actualizar(productoEditandoId, producto);
             
             // Actualizar en el estado local

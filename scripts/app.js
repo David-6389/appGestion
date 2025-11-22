@@ -15,7 +15,8 @@ export const estadoApp = {
         clientes: [],
         productos: [],
         ventas: [],
-        compras: []
+        compras: [],
+        usuario: null // Para guardar la info del usuario logueado
     }
 };
 
@@ -151,17 +152,32 @@ export function formatearMoneda(monto) {
 
 // Inicializar la aplicación cuando se carga la página
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Inicializando aplicación...');
-    
-    // Mostrar la sección dashboard por defecto
-    mostrarSeccion('dashboard');
-    
-    // Mostrar mensaje de bienvenida
-    mostrarAlerta('¡Sistema de gestión cargado correctamente!', 'success');
-    
-    // Cargar datos iniciales
-    cargarDatosIniciales();
+    // Comprobar el estado de autenticación
+    supabase.auth.onAuthStateChange(async (event, session) => {
+        if (session) {
+            // Usuario está logueado
+            console.log('Usuario autenticado:', session.user);
+            estadoApp.datos.usuario = session.user;
+
+            // Si estamos en la página de login/signup, redirigir a la app principal
+            if (window.location.pathname.includes('login.html') || window.location.pathname.includes('signup.html')) {
+                window.location.href = '/index.html';
+            } else {
+                // Estamos en la app principal, cargar todo
+                inicializarApp();
+            }
+        } else {
+            // Usuario no está logueado
+            console.log('Usuario no autenticado.');
+            estadoApp.datos.usuario = null;
+            // Si no estamos en login/signup, redirigir a login
+            if (!window.location.pathname.includes('login.html') && !window.location.pathname.includes('signup.html')) {
+                window.location.href = '/login.html';
+            }
+        }
+    });
 });
+
 
 // Función para cargar datos iniciales
 async function cargarDatosIniciales() {
@@ -197,6 +213,26 @@ async function cargarDatosIniciales() {
         console.error('Error cargando datos iniciales:', error);
         mostrarAlerta('Error al cargar los datos iniciales: ' + error.message, 'danger');
     }
+}
+
+// Función que se ejecuta una vez que el usuario está autenticado
+function inicializarApp() {
+    console.log('Inicializando aplicación...');
+    
+    // Configurar el botón de logout
+    const logoutButton = document.getElementById('logout-button');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', async () => {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                mostrarAlerta('Error al cerrar sesión: ' + error.message, 'danger');
+            }
+            // onAuthStateChange se encargará de la redirección
+        });
+    }
+
+    mostrarSeccion('dashboard');
+    cargarDatosIniciales();
 }
 
 export function actualizarEstadisticas() {

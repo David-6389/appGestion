@@ -143,6 +143,7 @@ export async function guardarCliente() {
         email: document.getElementById('clienteEmail').value,
         telefono: document.getElementById('clienteTelefono').value,
         tipo: document.querySelector('input[name="tipoCliente"]:checked').value,
+        user_id: estadoApp.datos.usuario.id, // <-- AÑADIR ID DEL USUARIO
         fecha_registro: new Date().toISOString()
     };
     
@@ -158,6 +159,8 @@ export async function guardarCliente() {
         if (clienteEditandoId) {
             // No actualizamos la fecha de registro al editar
             delete datosCliente.fecha_registro;
+            // Tampoco el user_id
+            delete datosCliente.user_id;
             // Modo edición - Actualizar cliente existente
             await clientesAPI.actualizar(clienteEditandoId, datosCliente);
             mostrarAlerta('Cliente actualizado exitosamente', 'success');
