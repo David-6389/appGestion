@@ -5,9 +5,16 @@ import { productosAPI } from './supabase.js';
 let productoEditandoId = null;
 
 // Función para cargar la sección de productos
-export function cargarProductos() {
-    console.log('Cargando productos...');
-    actualizarTablaProductos();
+export async function cargarProductos() {
+    console.log('Cargando productos desde Supabase...');
+    try {
+        const productos = await productosAPI.obtenerTodos();
+        estadoApp.datos.productos = productos;
+        actualizarTablaProductos();
+    } catch (error) {
+        console.error('Error cargando productos:', error);
+        mostrarAlerta('Error al cargar productos: ' + error.message, 'danger');
+    }
 }
 
 // Función para actualizar la tabla de productos

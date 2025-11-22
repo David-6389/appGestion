@@ -1,11 +1,25 @@
 // dashboard.js - Funciones específicas del Dashboard
 import { estadoApp, formatearMoneda, mostrarAlerta } from './app.js';
+import { ventasAPI, clientesAPI } from './supabase.js';
 
 // Función para cargar el dashboard
-export function cargarDashboard() {
+export async function cargarDashboard() {
     console.log('Cargando dashboard...');
-    actualizarEstadisticas('hoy'); // Cargar con 'hoy' por defecto
-    actualizarVistasDashboard('hoy');
+    try {
+        // Cargar los datos necesarios para el dashboard en paralelo
+        const [ventas, clientes] = await Promise.all([
+            ventasAPI.obtenerTodas(),
+            clientesAPI.obtenerTodos()
+        ]);
+        estadoApp.datos.ventas = ventas;
+        estadoApp.datos.clientes = clientes;
+
+        actualizarEstadisticas('hoy'); // Cargar con 'hoy' por defecto
+        actualizarVistasDashboard('hoy');
+    } catch (error) {
+        console.error('Error cargando datos del dashboard:', error);
+        mostrarAlerta('No se pudieron cargar los datos del dashboard: ' + error.message, 'danger');
+    }
     configurarMenuSandwich();
     configurarBotonesDashboard();
 }
