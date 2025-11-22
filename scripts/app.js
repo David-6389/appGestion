@@ -152,6 +152,9 @@ export function formatearMoneda(monto) {
 
 // Inicializar la aplicación cuando se carga la página
 document.addEventListener('DOMContentLoaded', function() {
+    // Configurar la lógica del menú de hamburguesa para móviles, independientemente del login.
+    configurarMenuHamburguesa();
+
     // Comprobar el estado de autenticación
     supabase.auth.onAuthStateChange(async (event, session) => {
         if (session) {
@@ -179,48 +182,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// Función para cargar datos iniciales
-async function cargarDatosIniciales() {
-    try {
-        console.log('Cargando datos iniciales desde Supabase...');
-        
-        // Cargar datos en paralelo
-        const [clientes, productos, ventas, compras] = await Promise.all([
-            clientesAPI.obtenerTodos(),
-            productosAPI.obtenerTodos(),
-            //productosAPI.obtenerActivos(),
-            ventasAPI.obtenerTodas(),
-            comprasAPI.obtenerTodas()
-        ]);
-
-         // Actualizar estado global
-        estadoApp.datos.clientes = clientes;
-        estadoApp.datos.productos = productos;
-        estadoApp.datos.ventas = ventas;
-        estadoApp.datos.compras = compras;
-
-        console.log('Datos cargados:', {
-            clientes: clientes.length,
-            productos: productos.length,
-            ventas: ventas.length,
-            compras: compras.length
-        });
-
-         // Mostrar mensaje de bienvenida
-        mostrarAlerta('¡Sistema de gestión cargado correctamente!', 'success');
-        
-    } catch (error) {
-        console.error('Error cargando datos iniciales:', error);
-        mostrarAlerta('Error al cargar los datos iniciales: ' + error.message, 'danger');
-    }
-}
-
 // Función que se ejecuta una vez que el usuario está autenticado
 function inicializarApp() {
     console.log('Inicializando aplicación...');
-
-    // Configurar la lógica del menú de hamburguesa para móviles
-    configurarMenuHamburguesa();
     
     // Configurar el botón de logout
     const logoutButton = document.getElementById('logout-button');
@@ -237,8 +201,10 @@ function inicializarApp() {
         });
     }
 
+    // Al iniciar sesión, limpiar cualquier dato residual y mostrar el dashboard.
+    // El dashboard cargará sus propios datos necesarios.
+    limpiarEstadoApp();
     mostrarSeccion('dashboard');
-    cargarDatosIniciales();
 }
 
 // Función para manejar el menú en dispositivos móviles
@@ -281,6 +247,10 @@ function limpiarEstadoApp() {
     document.getElementById('tablaProductos').innerHTML = '';
     document.getElementById('tablaVentas').innerHTML = '';
     document.getElementById('tablaCompras').innerHTML = '';
+    // Limpiar también el contenido del dashboard para evitar mostrar datos viejos
+    document.getElementById('topClientesContainer').innerHTML = '';
+    const chartCanvas = document.getElementById('chartProductosPopulares');
+    if (chartCanvas && chartCanvas.chart) chartCanvas.chart.destroy();
 }
 
 export function actualizarEstadisticas() {
