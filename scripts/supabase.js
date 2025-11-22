@@ -1,17 +1,33 @@
 // supabase.js - Cliente y funciones para Supabase
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { createClient } from '@supabase/supabase-js';
 
-// Configuración de Supabase (¡CORREGIDO!)
-const supabaseUrl = 'https://zjgpjbeklpemvogoglyw.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqZ3BqYmVrbHBlbXZvZ29nbHl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTQ5NDU0MTcsImV4cCI6MjAzMDUyMTQxN30.82cbK5i_fGOMd-A-UT8A23u-0dGj50aBv2s5Ayq3c5k';
+// --- PASO DE DEPURACIÓN ---
+console.log("Clave leída por Vite:", import.meta.env.VITE_SUPABASE_ANON_KEY);
+console.log("URL leída por Vite:", import.meta.env.VITE_SUPABASE_URL);
+// --------------------------
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// Configuración de Supabase usando variables de entorno de Vite
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+let supabaseInstance = null;
+
+function getSupabaseClient() {
+    if (!supabaseInstance) {
+        if (!supabaseUrl || !supabaseAnonKey) {
+            throw new Error("Supabase URL o Anon Key no están definidas. Revisa tu archivo .env y reinicia el servidor de Vite.");
+        }
+        supabaseInstance = createClient(supabaseUrl, supabaseAnonKey);
+    }
+    return supabaseInstance;
+}
+export const supabase = getSupabaseClient(); // Lo mantenemos para auth.js y app.js
 
 // Funciones para clientes
 export const clientesAPI = {
     // Obtener todos los clientes
     async obtenerTodos() {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .from('clientes')
             .select('*')
             .order('fecha_registro', { ascending: false })
@@ -22,7 +38,7 @@ export const clientesAPI = {
 
     // Obtener cliente por ID
     async obtenerPorId(id) {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .from('clientes')
             .select('*')
             .eq('id', id)
@@ -34,7 +50,7 @@ export const clientesAPI = {
 
     // Crear nuevo cliente
     async crear(cliente) {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .from('clientes')
             .insert([cliente])
             .select()
@@ -46,7 +62,7 @@ export const clientesAPI = {
 
     // Actualizar cliente
     async actualizar(id, updates) {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .from('clientes')
             .update(updates)
             .eq('id', id)
@@ -59,7 +75,7 @@ export const clientesAPI = {
 
     // Eliminar cliente
     async eliminar(id) {
-        const { error } = await supabase
+        const { error } = await getSupabaseClient()
             .from('clientes')
             .delete()
             .eq('id', id)
@@ -73,7 +89,7 @@ export const clientesAPI = {
 export const productosAPI = {
     // Obtener todos los productos
     async obtenerTodos() {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .from('productos')
             .select('*')
             .order('fecha_creacion', { ascending: false })
@@ -84,7 +100,7 @@ export const productosAPI = {
 
     // Obtener productos activos
     async obtenerActivos() {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .from('productos')
             .select('*')
             .eq('activo', true)
@@ -96,7 +112,7 @@ export const productosAPI = {
 
     // Crear nuevo producto
     async crear(producto) {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .from('productos')
             .insert([producto])
             .select()
@@ -108,7 +124,7 @@ export const productosAPI = {
 
     // Actualizar producto
     async actualizar(id, updates) {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .from('productos')
             .update(updates)
             .eq('id', id)
@@ -121,7 +137,7 @@ export const productosAPI = {
 
     // Actualizar stock
     async actualizarStock(id, nuevoStock) {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .from('productos')
             .update({ stock: nuevoStock })
             .eq('id', id)
@@ -137,7 +153,7 @@ export const productosAPI = {
 export const ventasAPI = {
     // Obtener todas las ventas con relaciones
     async obtenerTodas() {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .from('ventas')
             .select(`
                 *,
@@ -155,7 +171,7 @@ export const ventasAPI = {
 
     // Obtener ventas por rango de fechas
     async obtenerPorFecha(fechaInicio, fechaFin) {
-        let query = supabase
+        let query = getSupabaseClient()
             .from('ventas')
             .select(`
                 *,
@@ -184,7 +200,7 @@ export const ventasAPI = {
         const { venta, items } = ventaData
         
         // Insertar venta
-        const { data: ventaCreada, error: errorVenta } = await supabase
+        const { data: ventaCreada, error: errorVenta } = await getSupabaseClient()
             .from('ventas')
             .insert([venta])
             .select()
@@ -198,14 +214,14 @@ export const ventasAPI = {
             venta_id: ventaCreada.id
         }))
 
-        const { error: errorItems } = await supabase
+        const { error: errorItems } = await getSupabaseClient()
             .from('venta_items')
             .insert(itemsConVentaId)
 
         if (errorItems) throw errorItems
 
         // Obtener venta completa
-        const { data: ventaCompleta, error } = await supabase
+        const { data: ventaCompleta, error } = await getSupabaseClient()
             .from('ventas')
             .select(`
                 *,
@@ -224,7 +240,7 @@ export const ventasAPI = {
 
     async eliminar(ventaId) {
         try {
-            const { error: errorItems } = await supabase
+            const { error: errorItems } = await getSupabaseClient()
                 .from('venta_items')
                 .delete()
                 .eq('venta_id', ventaId);
@@ -235,7 +251,7 @@ export const ventasAPI = {
             } 
             
             // Luego eliminamos la venta
-            const { error: errorVenta } = await supabase
+            const { error: errorVenta } = await getSupabaseClient()
                 .from('ventas')
                 .delete()
                 .eq('id', ventaId);
@@ -255,7 +271,7 @@ export const ventasAPI = {
 
       // Obtener venta específica con relaciones
     async obtenerPorId(ventaId) {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .from('ventas')
             .select(`
                 *,
@@ -276,7 +292,7 @@ export const ventasAPI = {
 export const comprasAPI = {
     // Obtener todas las compras con relaciones
     async obtenerTodas() {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .from('compras')
             .select(`
                 *,
@@ -293,7 +309,7 @@ export const comprasAPI = {
 
     // Obtener compra por ID
     async obtenerPorId(compraId) {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .from('compras')
             .select(`
                 *,
@@ -314,7 +330,7 @@ export const comprasAPI = {
         const { compra, items } = compraData
         
         // Insertar compra
-        const { data: compraCreada, error: errorCompra } = await supabase
+        const { data: compraCreada, error: errorCompra } = await getSupabaseClient()
             .from('compras')
             .insert([compra])
             .select()
@@ -328,14 +344,14 @@ export const comprasAPI = {
             compra_id: compraCreada.id
         }))
 
-        const { error: errorItems } = await supabase
+        const { error: errorItems } = await getSupabaseClient()
             .from('compra_items')
             .insert(itemsConCompraId)
 
         if (errorItems) throw errorItems
 
         // Obtener compra completa
-        const { data: compraCompleta, error } = await supabase
+        const { data: compraCompleta, error } = await getSupabaseClient()
             .from('compras')
             .select(`
                 *,
@@ -354,7 +370,7 @@ export const comprasAPI = {
     // Eliminar compra y sus items
     async eliminar(compraId) {
         // Primero eliminamos los items de la compra
-        const { error: errorItems } = await supabase
+        const { error: errorItems } = await getSupabaseClient()
             .from('compra_items')
             .delete()
             .eq('compra_id', compraId);
@@ -362,7 +378,7 @@ export const comprasAPI = {
         if (errorItems) throw errorItems;
 
         // Luego eliminamos la compra
-        const { error: errorCompra } = await supabase
+        const { error: errorCompra } = await getSupabaseClient()
             .from('compras')
             .delete()
             .eq('id', compraId);
@@ -377,7 +393,7 @@ export const comprasAPI = {
 export const reportesAPI = {
     // Obtener estadísticas generales
     async obtenerEstadisticas(fechaInicio = null, fechaFin = null) {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .rpc('obtener_estadisticas_ventas', {
                 fecha_inicio: fechaInicio,
                 fecha_fin: fechaFin
@@ -389,7 +405,7 @@ export const reportesAPI = {
 
     // Obtener ventas por período
     async obtenerVentasPorPeriodo(periodoTipo, fechaInicio = null, fechaFin = null) {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabaseClient()
             .rpc('obtener_ventas_por_periodo', {
                 periodo_tipo: periodoTipo,
                 fecha_inicio: fechaInicio,

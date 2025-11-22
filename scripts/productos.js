@@ -82,7 +82,7 @@ function actualizarTablaProductos() {
 }
 
 // Función para mostrar el modal de producto
-function mostrarModalProducto(productoId = null) {
+export function mostrarModalProducto(productoId = null) {
     const formulario = document.getElementById('formProducto');
     const titulo = document.getElementById('tituloModalProducto');
     
@@ -201,7 +201,7 @@ export async function editarProducto(productoId) {
 }
 
 // Función para eliminar un producto
-function eliminarProducto(productoId) {
+export function eliminarProducto(productoId) {
     if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
         // Buscar índice del producto
         const index = estadoApp.datos.productos.findIndex(p => p.id === productoId);
@@ -222,7 +222,7 @@ function eliminarProducto(productoId) {
 }
 
 // Función para filtrar productos
-function filtrarProductos() {
+export function filtrarProductos() {
     const filtroNombre = document.getElementById('filtroProductoNombre').value.toLowerCase();
     const filtroCategoria = document.getElementById('filtroCategoria').value;
     const filtroStock = document.getElementById('filtroStock').value;
@@ -299,7 +299,7 @@ function filtrarProductos() {
 }
 
 // Función para limpiar filtros de productos
-function limpiarFiltrosProductos() {
+export function limpiarFiltrosProductos() {
     document.getElementById('filtroProductoNombre').value = '';
     document.getElementById('filtroCategoria').value = '';
     document.getElementById('filtroStock').value = '';
@@ -307,10 +307,3 @@ function limpiarFiltrosProductos() {
     actualizarTablaProductos();
     mostrarAlerta('Filtros limpiados', 'info');
 }
-
-window.mostrarModalProducto = mostrarModalProducto;
-window.guardarProducto = guardarProducto;
-window.editarProducto = editarProducto;
-window.eliminarProducto = eliminarProducto;
-window.filtrarProductos = filtrarProductos;
-window.limpiarFiltrosProductos = limpiarFiltrosProductos;

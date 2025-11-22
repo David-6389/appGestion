@@ -1,10 +1,10 @@
 // app.js - Navegación y Funciones Básicas
 import { supabase, clientesAPI, productosAPI, ventasAPI, comprasAPI, reportesAPI } from './supabase.js'
 import { cargarDashboard } from './dashboard.js';
-import { cargarClientes } from './clientes.js';
-import { cargarProductos } from './productos.js';
-import { cargarVentas } from './ventas.js';
-import { cargarCompras } from './compras.js';
+import { cargarClientes, mostrarModalCliente, editarCliente, guardarCliente, eliminarCliente, filtrarClientes, limpiarFiltrosClientes } from './clientes.js';
+import { cargarProductos, mostrarModalProducto, guardarProducto, editarProducto, eliminarProducto, filtrarProductos, limpiarFiltrosProductos } from './productos.js';
+import { cargarVentas, mostrarModalVenta, agregarProductoVenta, removerProductoVenta, guardarVenta, filtrarVentas, limpiarFiltrosVentas, verDetalleVentaModal, eliminarVenta as eliminarVentaCompleta, editarProductoVenta, guardarEdicionProductoVenta } from './ventas.js';
+import { cargarCompras, mostrarModalCompra, agregarProductoCompra, removerProductoCompra, guardarCompra, verDetalleCompra, eliminarCompra as eliminarCompraCompleta } from './compras.js';
 import { cargarReportes } from './reportes.js';
 
 
@@ -286,12 +286,42 @@ export function actualizarEstadisticas() {
     }
 }
 
-// Exportar funciones globales para que estén disponibles en el HTML
-window.mostrarSeccion = mostrarSeccion;
-window.mostrarAlerta = mostrarAlerta;
-window.formatearFecha = formatearFecha;
-window.formatearMoneda = formatearMoneda;
-window.actualizarEstadisticas = actualizarEstadisticas;
+// --- EXPORTAR FUNCIONES GLOBALES PARA EL HTML ---
+// Es necesario para que los `onclick` en el HTML funcionen cuando se usa `type="module"`
+Object.assign(window, {
+    // app.js
+    mostrarSeccion,
+    // clientes.js
+    mostrarModalCliente,
+    editarCliente,
+    guardarCliente,
+    eliminarCliente,
+    filtrarClientes,
+    limpiarFiltrosClientes,
+    // productos.js
+    mostrarModalProducto,
+    guardarProducto,
+    editarProducto,
+    eliminarProducto,
+    filtrarProductos,
+    limpiarFiltrosProductos,
+    // ventas.js
+    mostrarModalVenta,
+    agregarProductoVenta,
+    removerProductoVenta,
+    guardarVenta,
+    filtrarVentas,
+    limpiarFiltrosVentas,
+    verDetalleVentaModal,
+    eliminarVentaCompleta,
+    // compras.js
+    mostrarModalCompra,
+    agregarProductoCompra,
+    removerProductoCompra,
+    guardarCompra,
+    verDetalleCompra,
+    eliminarCompraCompleta,
+});
 
 
 export { cargarDashboard } from './dashboard.js';

@@ -124,7 +124,7 @@ function cargarSelectProductosCompra() {
 }
 
 // Función para agregar producto a la compra
-function agregarProductoCompra() {
+export function agregarProductoCompra() {
     const select = document.getElementById('productoSelectCompra');
     const cantidadInput = document.getElementById('productoCantidadCompra');
     const precioInput = document.getElementById('productoPrecioCompra');
@@ -223,14 +223,14 @@ function actualizarResumenCompra() {
 }
 
 // Función para remover producto de la compra
-function removerProductoCompra(index) {
+export function removerProductoCompra(index) {
     compraEnCurso.productos.splice(index, 1);
     actualizarResumenCompra();
     mostrarAlerta('Producto removido de la compra', 'info');
 }
 
 // Función para guardar la compra
-async function guardarCompra() {
+export async function guardarCompra() {
     const proveedor = document.getElementById('compraProveedor').value;
     const numeroFactura = document.getElementById('compraNumeroFactura').value;
     
@@ -297,7 +297,7 @@ async function guardarCompra() {
 }
 
 // Función para ver detalle de compra
-function verDetalleCompra(compraId) {
+export function verDetalleCompra(compraId) {
     try {
         const compra = estadoApp.datos.compras.find(c => c.id === compraId);
         
@@ -337,7 +337,7 @@ ${compra.notas ? `Notas: ${compra.notas}` : ''}
 }
 
 // Función para eliminar compra
-async function eliminarCompra(compraId) {
+export async function eliminarCompra(compraId) {
     if (!confirm('¿Estás seguro de que quieres eliminar esta compra? Esta acción revertirá el stock.')) {
         return;
     }
@@ -401,11 +401,3 @@ function configurarModalCompra() {
         };
     });
 }
-
-// Exportar funciones al scope global para el HTML
-window.mostrarModalCompra = mostrarModalCompra;
-window.agregarProductoCompra = agregarProductoCompra;
-window.removerProductoCompra = removerProductoCompra;
-window.guardarCompra = guardarCompra;
-window.verDetalleCompra = verDetalleCompra;
-window.eliminarCompra = eliminarCompra;

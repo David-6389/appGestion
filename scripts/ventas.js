@@ -74,7 +74,7 @@ function actualizarTablaVentas() {
     `).join('');
 }
 
-function editarProductoVenta(index) {
+export function editarProductoVenta(index) {
     const producto = ventaEnCurso.productos[index];
     
     // Mostrar modal de edición
@@ -142,7 +142,7 @@ function editarProductoVenta(index) {
 }
 
 
-function guardarEdicionProductoVenta(index) {
+export function guardarEdicionProductoVenta(index) {
     const cantidad = parseInt(document.getElementById('editarCantidad').value) || 1;
     const precio = parseFloat(document.getElementById('editarPrecio').value) || 0;
     
@@ -207,7 +207,7 @@ function cargarSelectProductos() {
 }
 
 // Función para mostrar el modal de venta
-function mostrarModalVenta() {
+export function mostrarModalVenta() {
     // Reiniciar la venta en curso
     ventaEnCurso = {
         clienteId: null,
@@ -234,10 +234,8 @@ function mostrarModalVenta() {
     modal.show();
 }
 
-window.mostrarModalVenta = mostrarModalVenta;
-
 // Función para agregar producto a la venta
-function agregarProductoVenta() {
+export function agregarProductoVenta() {
     const select = document.getElementById('productoSelect');
     const cantidadInput = document.getElementById('productoCantidad');
     const precioInput = document.getElementById('productoPrecioVenta');
@@ -366,14 +364,14 @@ function actualizarResumenVenta() {
 }
 
 // Función para remover producto de la venta
-function removerProductoVenta(index) {
+export function removerProductoVenta(index) {
     ventaEnCurso.productos.splice(index, 1);
     actualizarResumenVenta();
     mostrarAlerta('Producto removido de la venta', 'info');
 }
 
 // Función para guardar la venta
-async function guardarVenta() {
+export async function guardarVenta() {
     const clienteId = document.getElementById('ventaCliente').value;
     
     // Validaciones
@@ -450,7 +448,7 @@ function actualizarStockProductos(productosVendidos) {
 }
 
 // Función para filtrar ventas por fecha
-function filtrarVentas() {
+export function filtrarVentas() {
     const fechaInicio = document.getElementById('fechaInicio').value;
     const fechaFin = document.getElementById('fechaFin').value;
     const clienteId = document.getElementById('filtroClienteVenta').value;
@@ -535,7 +533,7 @@ function filtrarVentas() {
 }
 
 // Función para limpiar filtros de ventas
-function limpiarFiltrosVentas() {
+export function limpiarFiltrosVentas() {
     document.getElementById('fechaInicio').value = '';
     document.getElementById('fechaFin').value = '';
     document.getElementById('filtroClienteVenta').value = '';
@@ -545,7 +543,7 @@ function limpiarFiltrosVentas() {
 }
 
 // Función para ver detalle de venta (placeholder)
-function verDetalleVentaModal(ventaId) {
+export function verDetalleVentaModal(ventaId) {
     try {
         const venta = estadoApp.datos.ventas.find(v => v.id === ventaId);
         
@@ -659,7 +657,7 @@ function verDetalleVentaModal(ventaId) {
 }
 
 // Función para eliminar venta
-async function eliminarVenta(ventaId) {
+export async function eliminarVenta(ventaId) {
     if (!confirm('¿Estás seguro de que quieres eliminar esta venta?\nEsta acción no se puede deshacer.')) {
         return;
     }
@@ -747,17 +745,3 @@ function actualizarEstadisticasDashboard() {
         console.error('Error actualizando estadísticas:', error);
     }
 }
-
-
-window.mostrarModalVenta = mostrarModalVenta;
-window.agregarProductoVenta = agregarProductoVenta;
-window.removerProductoVenta = removerProductoVenta;
-window.guardarVenta = guardarVenta;
-window.filtrarVentas = filtrarVentas;
-window.limpiarFiltrosVentas = limpiarFiltrosVentas;
-window.verDetalleVentaModal = verDetalleVentaModal;
-window.eliminarVenta = eliminarVenta;
-window.actualizarStockProductos = actualizarStockProductos;
-window.editarProductoVenta = editarProductoVenta;
-window.guardarEdicionProductoVenta = guardarEdicionProductoVenta;
-window.actualizarEstadisticasDashboard = actualizarEstadisticasDashboard;
