@@ -21,137 +21,146 @@ function getSupabaseClient() {
     }
     return supabaseInstance;
 }
-export const supabase = getSupabaseClient(); // Lo mantenemos para auth.js y app.js
+export const supabase = getSupabaseClient(); // exportamos el cliente
 
-// Funciones para clientes
+// Helper: obtiene el usuario autenticado (y falla si no hay sesión)
+async function getCurrentUser() {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) throw error;
+    if (!data || !data.user) throw new Error("No hay usuario autenticado.");
+    return data.user;
+}
+
+/* =========================
+   API: Clientes
+   ========================= */
 export const clientesAPI = {
-    // Obtener todos los clientes
     async obtenerTodos() {
         const { data, error } = await getSupabaseClient()
             .from('clientes')
             .select('*')
-            .order('fecha_registro', { ascending: false })
-        
-        if (error) throw error
-        return data
+            .order('fecha_registro', { ascending: false });
+
+        if (error) throw error;
+        return data;
     },
 
-    // Obtener cliente por ID
     async obtenerPorId(id) {
         const { data, error } = await getSupabaseClient()
             .from('clientes')
             .select('*')
             .eq('id', id)
-            .single()
-        
-        if (error) throw error
-        return data
+            .single();
+
+        if (error) throw error;
+        return data;
     },
 
-    // Crear nuevo cliente
     async crear(cliente) {
+        const user = await getCurrentUser();
+        const nuevoCliente = { ...cliente, user_id: user.id };
+
         const { data, error } = await getSupabaseClient()
             .from('clientes')
-            .insert([cliente])
+            .insert([nuevoCliente])
             .select()
-            .single()
-        
-        if (error) throw error
-        return data
+            .single();
+
+        if (error) throw error;
+        return data;
     },
 
-    // Actualizar cliente
     async actualizar(id, updates) {
         const { data, error } = await getSupabaseClient()
             .from('clientes')
             .update(updates)
             .eq('id', id)
             .select()
-            .single()
-        
-        if (error) throw error
-        return data
+            .single();
+
+        if (error) throw error;
+        return data;
     },
 
-    // Eliminar cliente
     async eliminar(id) {
         const { error } = await getSupabaseClient()
             .from('clientes')
             .delete()
-            .eq('id', id)
-        
-        if (error) throw error
-        return true
-    }
-}
+            .eq('id', id);
 
-// Funciones para productos
+        if (error) throw error;
+        return true;
+    }
+};
+
+/* =========================
+   API: Productos
+   ========================= */
 export const productosAPI = {
-    // Obtener todos los productos
     async obtenerTodos() {
         const { data, error } = await getSupabaseClient()
             .from('productos')
             .select('*')
-            .order('fecha_creacion', { ascending: false })
-        
-        if (error) throw error
-        return data
+            .order('fecha_creacion', { ascending: false });
+
+        if (error) throw error;
+        return data;
     },
 
-    // Obtener productos activos
     async obtenerActivos() {
         const { data, error } = await getSupabaseClient()
             .from('productos')
             .select('*')
             .eq('activo', true)
-            .order('nombre')
-        
-        if (error) throw error
-        return data
+            .order('nombre');
+
+        if (error) throw error;
+        return data;
     },
 
-    // Crear nuevo producto
     async crear(producto) {
+        const user = await getCurrentUser();
+        const nuevoProducto = { ...producto, user_id: user.id };
+
         const { data, error } = await getSupabaseClient()
             .from('productos')
-            .insert([producto])
+            .insert([nuevoProducto])
             .select()
-            .single()
-        
-        if (error) throw error
-        return data
+            .single();
+
+        if (error) throw error;
+        return data;
     },
 
-    // Actualizar producto
     async actualizar(id, updates) {
         const { data, error } = await getSupabaseClient()
             .from('productos')
             .update(updates)
             .eq('id', id)
             .select()
-            .single()
-        
-        if (error) throw error
-        return data
+            .single();
+
+        if (error) throw error;
+        return data;
     },
 
-    // Actualizar stock
     async actualizarStock(id, nuevoStock) {
         const { data, error } = await getSupabaseClient()
             .from('productos')
             .update({ stock: nuevoStock })
             .eq('id', id)
             .select()
-            .single()
-        
-        if (error) throw error
-        return data
-    }
-}
+            .single();
 
-// Funciones para ventas
+        if (error) throw error;
+        return data;
+    }
+};
+
+/* =========================
+   API: Ventas
+   ========================= */
 export const ventasAPI = {
-    // Obtener todas las ventas con relaciones
     async obtenerTodas() {
         const { data, error } = await getSupabaseClient()
             .from('ventas')
@@ -163,13 +172,12 @@ export const ventasAPI = {
                     productos (*)
                 )
             `)
-            .order('fecha_venta', { ascending: false })
-        
-        if (error) throw error
-        return data
+            .order('fecha_venta', { ascending: false });
+
+        if (error) throw error;
+        return data;
     },
 
-    // Obtener ventas por rango de fechas
     async obtenerPorFecha(fechaInicio, fechaFin) {
         let query = getSupabaseClient()
             .from('ventas')
@@ -181,44 +189,40 @@ export const ventasAPI = {
                     productos (*)
                 )
             `)
-            .order('fecha_venta', { ascending: false })
+            .order('fecha_venta', { ascending: false });
 
-        if (fechaInicio) {
-            query = query.gte('fecha_venta', fechaInicio)
-        }
-        if (fechaFin) {
-            query = query.lte('fecha_venta', fechaFin + ' 23:59:59')
-        }
+        if (fechaInicio) query = query.gte('fecha_venta', fechaInicio);
+        if (fechaFin) query = query.lte('fecha_venta', fechaFin + ' 23:59:59');
 
-        const { data, error } = await query
-        if (error) throw error
-        return data
+        const { data, error } = await query;
+        if (error) throw error;
+        return data;
     },
 
     // Crear nueva venta (transacción)
     async crear(ventaData) {
-        const { venta, items } = ventaData
-        
+        const { venta, items } = ventaData;
+        const user = await getCurrentUser();
+
+        const ventaConUser = { ...venta, user_id: user.id };
+
         // Insertar venta
         const { data: ventaCreada, error: errorVenta } = await getSupabaseClient()
             .from('ventas')
-            .insert([venta])
+            .insert([ventaConUser])
             .select()
-            .single()
-        
-        if (errorVenta) throw errorVenta
+            .single();
+
+        if (errorVenta) throw errorVenta;
 
         // Insertar items de venta
-        const itemsConVentaId = items.map(item => ({
-            ...item,
-            venta_id: ventaCreada.id
-        }))
+        const itemsConVentaId = items.map(item => ({ ...item, venta_id: ventaCreada.id }));
 
         const { error: errorItems } = await getSupabaseClient()
             .from('venta_items')
-            .insert(itemsConVentaId)
+            .insert(itemsConVentaId);
 
-        if (errorItems) throw errorItems
+        if (errorItems) throw errorItems;
 
         // Obtener venta completa
         const { data: ventaCompleta, error } = await getSupabaseClient()
@@ -232,10 +236,10 @@ export const ventasAPI = {
                 )
             `)
             .eq('id', ventaCreada.id)
-            .single()
+            .single();
 
-        if (error) throw error
-        return ventaCompleta
+        if (error) throw error;
+        return ventaCompleta;
     },
 
     async eliminar(ventaId) {
@@ -244,32 +248,22 @@ export const ventasAPI = {
                 .from('venta_items')
                 .delete()
                 .eq('venta_id', ventaId);
-            
-            if (errorItems) {
-                console.error('Error eliminando items de venta: ', errorItems);
-                throw errorItems;
-            } 
-            
-            // Luego eliminamos la venta
+
+            if (errorItems) throw errorItems;
+
             const { error: errorVenta } = await getSupabaseClient()
                 .from('ventas')
                 .delete()
                 .eq('id', ventaId);
 
-            if (errorVenta) {
-                console.error('Error eliminando venta:', errorVenta);
-                throw errorVenta;
-        }
-            console.log('Venta eliminada exitosamente:', ventaId);
+            if (errorVenta) throw errorVenta;
+
             return true;
-        
         } catch (error) {
-            console.error('Error en eliminación completa:', error);
             throw error;
         }
     },
 
-      // Obtener venta específica con relaciones
     async obtenerPorId(ventaId) {
         const { data, error } = await getSupabaseClient()
             .from('ventas')
@@ -289,8 +283,10 @@ export const ventasAPI = {
     }
 };
 
+/* =========================
+   API: Compras
+   ========================= */
 export const comprasAPI = {
-    // Obtener todas las compras con relaciones
     async obtenerTodas() {
         const { data, error } = await getSupabaseClient()
             .from('compras')
@@ -301,13 +297,12 @@ export const comprasAPI = {
                     productos (*)
                 )
             `)
-            .order('fecha_compra', { ascending: false })
-        
+            .order('fecha_compra', { ascending: false });
+
         if (error) throw error;
         return data;
     },
 
-    // Obtener compra por ID
     async obtenerPorId(compraId) {
         const { data, error } = await getSupabaseClient()
             .from('compras')
@@ -325,30 +320,29 @@ export const comprasAPI = {
         return data;
     },
 
-    // Crear nueva compra (transacción)
     async crear(compraData) {
-        const { compra, items } = compraData
-        
+        const { compra, items } = compraData;
+        const user = await getCurrentUser();
+
+        const compraConUser = { ...compra, user_id: user.id };
+
         // Insertar compra
         const { data: compraCreada, error: errorCompra } = await getSupabaseClient()
             .from('compras')
-            .insert([compra])
+            .insert([compraConUser])
             .select()
-            .single()
-        
-        if (errorCompra) throw errorCompra
+            .single();
+
+        if (errorCompra) throw errorCompra;
 
         // Insertar items de compra
-        const itemsConCompraId = items.map(item => ({
-            ...item,
-            compra_id: compraCreada.id
-        }))
+        const itemsConCompraId = items.map(item => ({ ...item, compra_id: compraCreada.id }));
 
         const { error: errorItems } = await getSupabaseClient()
             .from('compra_items')
-            .insert(itemsConCompraId)
+            .insert(itemsConCompraId);
 
-        if (errorItems) throw errorItems
+        if (errorItems) throw errorItems;
 
         // Obtener compra completa
         const { data: compraCompleta, error } = await getSupabaseClient()
@@ -361,15 +355,13 @@ export const comprasAPI = {
                 )
             `)
             .eq('id', compraCreada.id)
-            .single()
+            .single();
 
-        if (error) throw error
-        return compraCompleta
+        if (error) throw error;
+        return compraCompleta;
     },
 
-    // Eliminar compra y sus items
     async eliminar(compraId) {
-        // Primero eliminamos los items de la compra
         const { error: errorItems } = await getSupabaseClient()
             .from('compra_items')
             .delete()
@@ -377,7 +369,6 @@ export const comprasAPI = {
 
         if (errorItems) throw errorItems;
 
-        // Luego eliminamos la compra
         const { error: errorCompra } = await getSupabaseClient()
             .from('compras')
             .delete()
@@ -389,30 +380,30 @@ export const comprasAPI = {
     }
 };
 
-// Funciones para reportes
+/* =========================
+   API: Reportes
+   ========================= */
 export const reportesAPI = {
-    // Obtener estadísticas generales
     async obtenerEstadisticas(fechaInicio = null, fechaFin = null) {
         const { data, error } = await getSupabaseClient()
             .rpc('obtener_estadisticas_ventas', {
                 fecha_inicio: fechaInicio,
                 fecha_fin: fechaFin
-            })
-        
-        if (error) throw error
-        return data[0]
+            });
+
+        if (error) throw error;
+        return data[0];
     },
 
-    // Obtener ventas por período
     async obtenerVentasPorPeriodo(periodoTipo, fechaInicio = null, fechaFin = null) {
         const { data, error } = await getSupabaseClient()
             .rpc('obtener_ventas_por_periodo', {
                 periodo_tipo: periodoTipo,
                 fecha_inicio: fechaInicio,
                 fecha_fin: fechaFin
-            })
-        
-        if (error) throw error
-        return data
+            });
+
+        if (error) throw error;
+        return data;
     }
-}
+};
