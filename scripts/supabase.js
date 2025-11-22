@@ -1,9 +1,9 @@
 // supabase.js - Cliente y funciones para Supabase
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-// Configuración de Supabase
-const supabaseUrl = VITE_SUPABASE_URL; // <-- TU URL DE SUPABASE
-const supabaseAnonKey = VITE_SUPABASE_ANON_KEY
+// Configuración de Supabase (¡CORREGIDO!)
+const supabaseUrl = 'https://zjgpjbeklpemvogoglyw.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpqZ3BqYmVrbHBlbXZvZ29nbHl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTQ5NDU0MTcsImV4cCI6MjAzMDUyMTQxN30.82cbK5i_fGOMd-A-UT8A23u-0dGj50aBv2s5Ayq3c5k';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
