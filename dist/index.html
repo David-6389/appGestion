@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión - Clientes, Ventas y Productos</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+
+  <script type="module" crossorigin src="/assets/main-9560611f.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/supabase-067fb71c.js">
+  <link rel="stylesheet" href="/assets/supabase-47523edb.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar Navigation -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky pt-4">
+                    <!-- Logo y Título -->
+                    <div class="text-center mb-4">
+                        <h4 class="fw-bold">
+                            <i class="bi bi-shop-window"></i>
+                            App Gestion de Negocios
+                        </h4>
+                        <p class="text-light small">Sistema de Gestión</p>
+                    </div>
+                    
+                    <!-- Menú de Navegación -->
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#" onclick="mostrarSeccion('dashboard')">
+                                <i class="bi bi-speedometer2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="mostrarSeccion('clientes')">
+                                <i class="bi bi-people-fill"></i> Clientes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="mostrarSeccion('productos')">
+                                <i class="bi bi-box-seam"></i> Productos
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="mostrarSeccion('ventas')">
+                                <i class="bi bi-cart-check"></i> Ventas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="mostrarSeccion('compras')">
+                                <i class="bi bi-cart-check"></i> Compras
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="mostrarSeccion('reportes')">
+                                <i class="bi bi-graph-up-arrow"></i> Reportes
+                            </a>
+                        </li>
+                    </ul>
+
+                    <!-- Logout -->
+                    <div class="px-3 mt-4">
+                         <button class="btn btn-danger w-100" id="logout-button">
+                            <i class="bi bi-box-arrow-left"></i>
+                            Cerrar Sesión
+                        </button>
+                    </div>
+                    
+                    <!-- Información del Sistema -->
+                    <div class="mt-5 px-3">
+                        <small class="text-light opacity-75">
+                            <i class="bi bi-info-circle"></i>
+                            Sistema v1.0
+                        </small>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Main Content Area -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <!-- Container para Alertas -->
+                <div id="alertContainer" class="mt-3"></div>
+
+                <!-- ===== DASHBOARD ===== -->
+                <div id="dashboard" class="seccion">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">
+                            <i class="bi bi-speedometer2 text-primary"></i>
+                            Dashboard
+                        </h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <div class="btn-group me-2">
+                                <button type="button" class="btn btn-sm btn-outline-secondary">Hoy</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary">Esta semana</button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary">Este mes</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cards de Estadísticas -->
+                    <div class="row mt-4">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stats-card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Ventas Hoy
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="ventasHoy">$0.00</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="bi bi-currency-dollar fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stats-card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Total Clientes
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalClientes">0</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="bi bi-people fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stats-card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Productos
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalProductos">0</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="bi bi-box fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card stats-card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Ingresos del Mes
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800" id="ingresosMes">$0.00</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="bi bi-graph-up fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráficos del Dashboard -->
+                    <div class="row mt-4">
+                        <div class="col-md-8">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary" id="tituloTopClientes">Top Clientes</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive" id="topClientesContainer">
+                                        <!-- El top 10 de clientes se renderizará aquí -->
+                                        <p class="text-center text-muted">No hay datos de ventas para mostrar.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Productos Más Vendidos</h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="chartProductosPopulares" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== CLIENTES ===== -->
+                <div id="clientes" class="seccion" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">
+                            <i class="bi bi-people-fill text-success"></i>
+                            Gestión de Clientes
+                        </h1>
+                        <button class="btn btn-primary" onclick="mostrarModalCliente()">
+                            <i class="bi bi-plus-circle"></i> Nuevo Cliente
+                        </button>
+                    </div>
+
+                    <!-- Filtros de Clientes -->
+                    <div class="filtros-container">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Buscar por nombre</label>
+                                <input type="text" class="form-control" id="filtroNombre" placeholder="Nombre del cliente...">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Buscar por email</label>
+                                <input type="email" class="form-control" id="filtroEmail" placeholder="Email del cliente...">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">&nbsp;</label>
+                                <button class="btn btn-outline-primary w-100" onclick="filtrarClientes()">
+                                    <i class="bi bi-funnel"></i> Filtrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Clientes -->
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Email</th>
+                                            <th>Teléfono</th>
+                                            <th>Tipo</th>
+                                            <th>Fecha Registro</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaClientes">
+                                        <!-- Los datos se cargarán aquí dinámicamente -->
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">
+                                                <i class="bi bi-people display-4"></i>
+                                                <p class="mt-2">No hay clientes registrados</p>
+                                                <button class="btn btn-primary" onclick="mostrarModalCliente()">
+                                                    <i class="bi bi-plus"></i> Agregar Primer Cliente
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== PRODUCTOS ===== -->
+                <div id="productos" class="seccion" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">
+                            <i class="bi bi-box-seam text-warning"></i>
+                            Gestión de Productos
+                        </h1>
+                        <button class="btn btn-primary" onclick="mostrarModalProducto()">
+                            <i class="bi bi-plus-circle"></i> Nuevo Producto
+                        </button>
+                    </div>
+
+                    <!-- Filtros de Productos -->
+                    <div class="filtros-container">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Buscar por nombre</label>
+                                <input type="text" class="form-control" id="filtroProductoNombre" placeholder="Nombre del producto...">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Categoría</label>
+                                <select class="form-select" id="filtroCategoria">
+                                    <option value="">Todas las categorías</option>
+                                    <option value="electronica">Electrónica</option>
+                                    <option value="ropa">Ropa</option>
+                                    <option value="hogar">Hogar</option>
+                                    <option value="deportes">Deportes</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Estado stock</label>
+                                <select class="form-select" id="filtroStock">
+                                    <option value="">Todos</option>
+                                    <option value="disponible">En stock</option>
+                                    <option value="agotado">Sin stock</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">&nbsp;</label>
+                                <button class="btn btn-outline-primary w-100" onclick="filtrarProductos()">
+                                    <i class="bi bi-funnel"></i> Filtrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Productos -->
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Descripción</th>
+                                            <th>Stock</th>
+                                            <th>Categoría</th>
+                                            <th>Fecha Creación</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaProductos">
+                                        <!-- Los datos se cargarán aquí dinámicamente -->
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted py-4">
+                                                <i class="bi bi-box display-4"></i>
+                                                <p class="mt-2">No hay productos registrados</p>
+                                                <button class="btn btn-primary" onclick="mostrarModalProducto()">
+                                                    <i class="bi bi-plus"></i> Agregar Primer Producto
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== VENTAS ===== -->
+                <div id="ventas" class="seccion" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">
+                            <i class="bi bi-cart-check text-danger"></i>
+                            Gestión de Ventas
+                        </h1>
+                        <button class="btn btn-primary" onclick="mostrarModalVenta()">
+                            <i class="bi bi-plus-circle"></i> Nueva Venta
+                        </button>
+                    </div>
+
+                    <!-- Filtros de Ventas por Fecha -->
+                    <div class="filtros-container">
+                        <h6 class="mb-3">
+                            <i class="bi bi-calendar-range"></i> Filtrar por Fechas
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Fecha Inicio</label>
+                                <input type="date" class="form-control" id="fechaInicio">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Fecha Fin</label>
+                                <input type="date" class="form-control" id="fechaFin">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Cliente</label>
+                                <select class="form-select" id="filtroClienteVenta">
+                                    <option value="">Todos los clientes</option>
+                                    <!-- Opciones se cargarán dinámicamente -->
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" onclick="filtrarVentas()">
+                                        <i class="bi bi-filter"></i> Aplicar Filtros
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="limpiarFiltrosVentas()">
+                                        <i class="bi bi-arrow-clockwise"></i> Limpiar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Ventas -->
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha Venta</th>
+                                            <th>Cliente</th>
+                                            <th>Productos</th>
+                                            <th>Total</th>
+                                            <th>Estado</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaVentas">
+                                        <!-- Los datos se cargarán aquí dinámicamente -->
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">
+                                                <i class="bi bi-cart display-4"></i>
+                                                <p class="mt-2">No hay ventas registradas</p>
+                                                <button class="btn btn-primary" onclick="mostrarModalVenta()">
+                                                    <i class="bi bi-plus"></i> Registrar Primera Venta
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                                <!-- ===== COMPRAS ===== -->
+                <div id="compras" class="seccion" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">
+                            <i class="bi bi-cart-plus text-success"></i>
+                            Gestión de Compras
+                        </h1>
+                        <button class="btn btn-primary" onclick="mostrarModalCompra()">
+                            <i class="bi bi-plus-circle"></i> Nueva Compra
+                        </button>
+                    </div>
+
+                    <!-- Filtros de Compras -->
+                    <div class="filtros-container">
+                        <h6 class="mb-3">
+                            <i class="bi bi-calendar-range"></i> Filtrar por Fechas
+                        </h6>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <label class="form-label">Fecha Inicio</label>
+                                <input type="date" class="form-control" id="fechaInicioCompra">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Fecha Fin</label>
+                                <input type="date" class="form-control" id="fechaFinCompra">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Proveedor</label>
+                                <input type="text" class="form-control" id="filtroProveedor" placeholder="Nombre del proveedor...">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" onclick="filtrarCompras()">
+                                        <i class="bi bi-filter"></i> Aplicar Filtros
+                                    </button>
+                                    <button class="btn btn-outline-secondary" onclick="limpiarFiltrosCompras()">
+                                        <i class="bi bi-arrow-clockwise"></i> Limpiar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Compras -->
+                    <div class="card shadow">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Fecha Compra</th>
+                                            <th>Proveedor</th>
+                                            <th>Productos</th>
+                                            <th>Subtotal</th>
+                                            <th>IVA</th>
+                                            <th>Total</th>
+                                            <th>Estado</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaCompras">
+                                        <!-- Los datos se cargarán aquí dinámicamente -->
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted py-4">
+                                                <i class="bi bi-cart-plus display-4"></i>
+                                                <p class="mt-2">No hay compras registradas</p>
+                                                <button class="btn btn-primary" onclick="mostrarModalCompra()">
+                                                    <i class="bi bi-plus"></i> Registrar Primera Compra
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== REPORTES ===== -->
+                <div id="reportes" class="seccion" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">
+                            <i class="bi bi-graph-up-arrow text-info"></i>
+                            Reportes y Estadísticas
+                        </h1>
+                        <div class="btn-group">
+                            <button class="btn btn-outline-primary" onclick="generarReporte('diario')">
+                                <i class="bi bi-calendar-day"></i> Diario
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="generarReporte('mensual')">
+                                <i class="bi bi-calendar-month"></i> Mensual
+                            </button>
+                            <button class="btn btn-outline-primary" onclick="generarReporte('anual')">
+                                <i class="bi bi-calendar-year"></i> Anual
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filtros de Reportes -->
+                    <div class="filtros-container">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Período del Reporte</label>
+                                <select class="form-select" id="periodoReporte" onchange="cambiarPeriodoReporte()">
+                                    <option value="diario">Diario</option>
+                                    <option value="mensual">Mensual</option>
+                                    <option value="anual">Anual</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Fecha Inicio</label>
+                                <input type="date" class="form-control" id="reporteFechaInicio">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Fecha Fin</label>
+                                <input type="date" class="form-control" id="reporteFechaFin">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <button class="btn btn-primary me-2" onclick="generarReporte()">
+                                    <i class="bi bi-file-earmark-bar-graph"></i> Generar Reporte
+                                </button>
+                                <button class="btn btn-success" onclick="exportarReporte()">
+                                    <i class="bi bi-download"></i> Exportar Excel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráficos de Reportes -->
+                    <div class="row mt-4">
+                        <div class="col-md-8">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="bi bi-bar-chart"></i>
+                                        Ventas por Período
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="chartVentasPeriodo" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">
+                                        <i class="bi bi-pie-chart"></i>
+                                        Distribución por Categorías
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="chartCategorias" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Reportes -->
+                    <div class="card shadow">
+                        <div class="card-header">
+                            <h6 class="m-0 font-weight-bold text-primary">
+                                <i class="bi bi-table"></i>
+                                Detalle del Reporte
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Período</th>
+                                            <th>Total Ventas</th>
+                                            <th>Cantidad Ventas</th>
+                                            <th>Promedio por Venta</th>
+                                            <th>Clientes Atendidos</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaReportes">
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted py-4">
+                                                <i class="bi bi-graph-up display-4"></i>
+                                                <p class="mt-2">Selecciona un período y genera el reporte</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- ===== MODALES ===== -->
+
+    <!-- Modal Cliente -->
+    <div class="modal fade" id="modalCliente" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-person-plus"></i>
+                        <span id="tituloModalCliente">Nuevo Cliente</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formCliente">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Nombre Completo *</label>
+                                    <input type="text" class="form-control" id="clienteNombre" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Email *</label>
+                                    <input type="email" class="form-control" id="clienteEmail" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-control" id="clienteTelefono">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Cliente:</label>
+                            <div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="tipoCliente" id="tipoMaster" value="Master" checked>
+                                    <label class="form-check-label" for="tipoMaster">
+                                        Master
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="tipoCliente" id="tipoRevenda" value="Revenda">
+                                    <label class="form-check-label" for="tipoRevenda">
+                                        Revenda
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="guardarCliente()">
+                        <i class="bi bi-check-circle"></i> Guardar Cliente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Producto -->
+    <div class="modal fade" id="modalProducto" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-box-seam"></i>
+                        <span id="tituloModalProducto">Nuevo Producto</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formProducto">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Nombre del Producto *</label>
+                                    <input type="text" class="form-control" id="productoNombre" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Categoría</label>
+                                    <select class="form-select" id="productoCategoria">
+                                        <option value="">Seleccionar categoría</option>
+                                        <option value="electronica">Electrónica</option>
+                                        <option value="ropa">Ropa</option>
+                                        <option value="hogar">Hogar</option>
+                                        <option value="deportes">Deportes</option>
+                                        <option value="otros">Otros</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-control" id="productoDescripcion" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Stock Inicial</label>
+                                    <input type="number" class="form-control" id="productoStock" value="0" min="0">
+                                    <small class="text-muted">Cantidad disponible inicialmente</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Unidad de Medida</label>
+                                    <input type="text" class="form-control" id="productoUnidad" placeholder="pz, kg, lt...">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="guardarProducto()">
+                        <i class="bi bi-check-circle"></i> Guardar Producto
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Venta -->
+    <div class="modal fade" id="modalVenta" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-cart-plus"></i>
+                        Nueva Venta
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <!-- Selección de Cliente -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-person"></i> Datos del Cliente
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <select class="form-select" id="ventaCliente" required>
+                                        <option value="">Seleccionar cliente...</option>
+                                        <!-- Opciones se cargarán dinámicamente -->
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Agregar Productos -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-cart"></i> Agregar Productos
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label class="form-label">Producto</label>
+                                            <select class="form-select" id="productoSelect">
+                                                <option value="">Seleccionar producto...</option>
+                                                <!-- Opciones se cargarán dinámicamente -->
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Cantidad</label>
+                                            <input type="number" class="form-control" id="productoCantidad" value="1" min="1">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Precio Venta</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="productoPrecioVenta" 
+                                                    step="0.01" min="0.01" placeholder="Precio unitario...">
+                                            </div>
+                                            <small class="text-muted">Dejar vacío para usar precio original</small>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">&nbsp;</label>
+                                            <button class="btn btn-primary w-100" onclick="agregarProductoVenta()">
+                                                <i class="bi bi-plus-lg"></i> Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <!-- Resumen de Venta -->
+                            <div class="card sticky-top" style="top: 20px;">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-receipt"></i> Resumen de Venta
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="listaProductosVenta" class="mb-3">
+                                        <p class="text-muted text-center">No hay productos agregados</p>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong>Subtotal:</strong>
+                                        <span id="subtotalVenta">$0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong>IVA (21%):</strong>
+                                        <span id="ivaVenta">$0.00</span>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between align-items-center fs-5 fw-bold">
+                                        <strong>TOTAL:</strong>
+                                        <span id="totalVenta" class="text-success">$0.00</span>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button class="btn btn-success w-100" onclick="guardarVenta()">
+                                        <i class="bi bi-check-lg"></i> Finalizar Venta
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- Modal Compra -->
+    <div class="modal fade" id="modalCompra" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-cart-plus"></i>
+                        Nueva Compra
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <!-- Datos del Proveedor -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-building"></i> Datos del Proveedor
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <form id="formCompra">
+                                        <div class="row g-3">
+                                            <div class="col-md-8">
+                                                <label class="form-label">Proveedor *</label>
+                                                <input type="text" class="form-control" id="compraProveedor" required placeholder="Nombre del proveedor...">
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label class="form-label">N° Factura</label>
+                                                <input type="text" class="form-control" id="compraNumeroFactura" placeholder="Número de factura...">
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Agregar Productos -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-box-seam"></i> Agregar Productos
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-3">
+                                        <div class="col-md-5">
+                                            <label class="form-label">Producto</label>
+                                            <select class="form-select" id="productoSelectCompra">
+                                                <option value="">Seleccionar producto...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Cantidad</label>
+                                            <input type="number" class="form-control" id="productoCantidadCompra" value="1" min="1">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Precio Unitario</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="number" class="form-control" id="productoPrecioCompra" step="0.01" min="0.01" placeholder="0.00">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label class="form-label">&nbsp;</label>
+                                            <button class="btn btn-primary w-100" onclick="agregarProductoCompra()">
+                                                <i class="bi bi-plus-lg"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <!-- Resumen de Compra -->
+                            <div class="card sticky-top" style="top: 20px;">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-receipt"></i> Resumen de Compra
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="listaProductosCompra" class="mb-3">
+                                        <p class="text-muted text-center">No hay productos agregados</p>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong>Subtotal:</strong>
+                                        <span id="subtotalCompra">$0.00</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong>IVA (21%):</strong>
+                                        <span id="ivaCompra">$0.00</span>
+                                    </div>
+                                    <hr>
+                                    <div class="d-flex justify-content-between align-items-center fs-5 fw-bold">
+                                        <strong>TOTAL:</strong>
+                                        <span id="totalCompra" class="text-success">$0.00</span>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button class="btn btn-success w-100" onclick="guardarCompra()">
+                                        <i class="bi bi-check-lg"></i> Registrar Compra
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+
+    <!-- Scripts de la aplicación -->
+    
+    
+    
+    
+    
+    
+</body>
+</html>
