@@ -5,7 +5,8 @@
             height: 100vh;
             background-color: #f8f9fa;
         }
-        .login-card {
-            width: 100%;
-            max-width: 400px;
-        }
+        
+.login-card {
+    width: 100%;
+    max-width: 400px;
+}

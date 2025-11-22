@@ -24,11 +24,16 @@
             <form id="signup-form">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" required>
+                    <input type="email" class="form-control" id="signup-email" required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Contraseña</label>
-                    <input type="password" class="form-control" id="password" required minlength="6" autocomplete="new-password">
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="signup-password" required minlength="6" autocomplete="new-password">
+                        <button type="button" class="btn btn-outline-secondary password-toggle-btn" id="toggleSignupPassword" aria-label="Mostrar Contraseña">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                    </div>
                     <small class="form-text text-muted">Mínimo 6 caracteres.</small>
                 </div>
                 <div class="d-grid">

@@ -84,4 +84,4 @@ ${E}`}class A extends Error{constructor({message:e,code:t,cause:r,name:n}){var i
                     productos (*)
                 )
             `).eq("id",r.id).single();if(l)throw l;return a},async eliminar(s){const{error:e}=await T().from("compra_items").delete().eq("compra_id",s);if(e)throw e;const{error:t}=await T().from("compras").delete().eq("id",s);if(t)throw t;return!0}};export{bi as a,vi as c,yi as p,_i as s,mi as v};
-//# sourceMappingURL=supabase-5506004a.js.map
+//# sourceMappingURL=supabase-34e408ae.js.map

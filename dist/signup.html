@@ -8,9 +8,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     
     
-  <script type="module" crossorigin src="/assets/supabase-5506004a.js"></script>
-  <script type="module" crossorigin src="/assets/auth-983e4f48.js"></script>
-  <link rel="stylesheet" href="/assets/supabase-9efe5ea6.css">
+  <script type="module" crossorigin src="/assets/supabase-34e408ae.js"></script>
+  <script type="module" crossorigin src="/assets/auth-544a2668.js"></script>
+  <link rel="stylesheet" href="/assets/supabase-a10db7ec.css">
   <link rel="stylesheet" href="/assets/signup-25b2d22c.css">
 </head>
 <body>
@@ -28,11 +28,16 @@
             <form id="signup-form">
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" required>
+                    <input type="email" class="form-control" id="signup-email" required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Contraseña</label>
-                    <input type="password" class="form-control" id="password" required minlength="6" autocomplete="new-password">
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="signup-password" required minlength="6" autocomplete="new-password">
+                        <button type="button" class="btn btn-outline-secondary password-toggle-btn" id="toggleSignupPassword" aria-label="Mostrar Contraseña">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                    </div>
                     <small class="form-text text-muted">Mínimo 6 caracteres.</small>
                 </div>
                 <div class="d-grid">

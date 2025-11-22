@@ -22,8 +22,8 @@ const loginForm = document.getElementById('login-form');
 if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
 
         const { error } = await supabase.auth.signInWithPassword({
             email: email,
@@ -44,8 +44,8 @@ const signupForm = document.getElementById('signup-form');
 if (signupForm) {
     signupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
 
         const { data, error } = await supabase.auth.signUp({
             email: email,
@@ -67,3 +67,55 @@ if (signupForm) {
         }
     });
 }
+
+function configurarVisualizacionPassword() {
+    // Configurar para login
+    
+    const toggleLoginBtn = document.getElementById('toggleLoginPassword');
+    const loginPassword = document.getElementById('login-password');
+    
+    if (toggleLoginBtn && loginPassword) {
+        toggleLoginBtn.addEventListener('click', function() {
+            togglePasswordVisibility(loginPassword, toggleLoginBtn);
+        });
+    }
+    
+    // Configurar para registro
+    const toggleSignupBtn = document.getElementById('toggleSignupPassword');
+    const registerPassword = document.getElementById('signup-password');
+    
+    if (toggleSignupBtn && registerPassword) {
+        toggleSignupBtn.addEventListener('click', function() {
+            togglePasswordVisibility(registerPassword, toggleSignupBtn);
+        });
+    }
+    
+    // Configurar para confirmar contraseña
+    const toggleConfirmBtn = document.getElementById('toggleConfirmPassword');
+    const confirmPassword = document.getElementById('confirm-password');
+    
+    if (toggleConfirmBtn && confirmPassword) {
+        toggleConfirmBtn.addEventListener('click', function() {
+            togglePasswordVisibility(confirmPassword, toggleConfirmBtn);
+        });
+    }
+}
+
+// Función auxiliar para cambiar la visibilidad
+function togglePasswordVisibility(passwordInput, toggleButton) {
+    const isPassword = passwordInput.type === 'password';
+    
+    if (isPassword) {
+        // Mostrar contraseña
+        passwordInput.type = 'text';
+        toggleButton.innerHTML = '<i class="bi bi-eye"></i>';
+        toggleButton.setAttribute('aria-label', 'Ocultar contraseña');
+    } else {
+        // Ocultar contraseña
+        passwordInput.type = 'password';
+        toggleButton.innerHTML = '<i class="bi bi-eye-slash"></i>';
+        toggleButton.setAttribute('aria-label', 'Mostrar contraseña');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', configurarVisualizacionPassword);

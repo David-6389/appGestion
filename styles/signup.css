@@ -5,7 +5,8 @@
             height: 100vh;
             background-color: #f8f9fa;
         }
-        .signup-card {
-            width: 100%;
-            max-width: 400px;
-        }
+        
+.signup-card {
+    width: 100%;
+    max-width: 400px;
+}

@@ -215,13 +215,23 @@ function configurarMenuHamburguesa() {
 
     if (toggler && sidebar && overlay) {
         toggler.addEventListener('click', () => {
+            const isOpening = !sidebar.classList.contains('show');
+
             sidebar.classList.toggle('show');
             overlay.classList.toggle('show');
+
+            // Ocultar/mostrar el botón hamburguesa
+            if (isOpening) {
+                toggler.style.display = 'none'; // Ocultar al abrir
+            } else {
+                toggler.style.display = 'block'; // Mostrar al cerrar
+            }
         });
 
         overlay.addEventListener('click', () => {
             sidebar.classList.remove('show');
             overlay.classList.remove('show');
+            toggler.style.display = 'block';
         });
 
         // Ocultar menú al hacer clic en una opción
@@ -229,6 +239,7 @@ function configurarMenuHamburguesa() {
             if (e.target.classList.contains('nav-link')) {
                 sidebar.classList.remove('show');
                 overlay.classList.remove('show');
+                toggler.style.display = 'block';
             }
         });
     }
@@ -240,7 +251,6 @@ function limpiarEstadoApp() {
     estadoApp.datos.productos = [];
     estadoApp.datos.ventas = [];
     estadoApp.datos.compras = [];
-    estadoApp.datos.usuario = null;
 
     // Limpiar las tablas en la UI para que no se muestren datos viejos
     document.getElementById('tablaClientes').innerHTML = '';
