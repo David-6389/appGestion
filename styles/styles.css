@@ -105,12 +105,12 @@
     
     /* Botón hamburguesa */
     .navbar-toggler {
-        position: fixed;
+        position: absolute;
         top: 15px;
         left: 15px;
         z-index: 1060;
         background: #2c3e50;
-        border: none;
+        border: 1px solid rgba(255, 255, 255, 0.2);
         padding: 8px 12px;
         border-radius: 5px;
     }

@@ -218,21 +218,69 @@ async function cargarDatosIniciales() {
 // Función que se ejecuta una vez que el usuario está autenticado
 function inicializarApp() {
     console.log('Inicializando aplicación...');
+
+    // Configurar la lógica del menú de hamburguesa para móviles
+    configurarMenuHamburguesa();
     
     // Configurar el botón de logout
     const logoutButton = document.getElementById('logout-button');
     if (logoutButton) {
         logoutButton.addEventListener('click', async () => {
+            // Limpiar el estado de la aplicación antes de cerrar sesión
+            limpiarEstadoApp();
             const { error } = await supabase.auth.signOut();
             if (error) {
                 mostrarAlerta('Error al cerrar sesión: ' + error.message, 'danger');
             }
-            // onAuthStateChange se encargará de la redirección
+            // onAuthStateChange se encargará de la redirección a login.html
+            // y de limpiar la interfaz.
         });
     }
 
     mostrarSeccion('dashboard');
     cargarDatosIniciales();
+}
+
+// Función para manejar el menú en dispositivos móviles
+function configurarMenuHamburguesa() {
+    const toggler = document.querySelector('.navbar-toggler');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+
+    if (toggler && sidebar && overlay) {
+        toggler.addEventListener('click', () => {
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        });
+
+        // Ocultar menú al hacer clic en una opción
+        sidebar.addEventListener('click', (e) => {
+            if (e.target.classList.contains('nav-link')) {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+            }
+        });
+    }
+}
+// Nueva función para limpiar el estado de la aplicación
+function limpiarEstadoApp() {
+    console.log('Limpiando estado de la aplicación...');
+    estadoApp.datos.clientes = [];
+    estadoApp.datos.productos = [];
+    estadoApp.datos.ventas = [];
+    estadoApp.datos.compras = [];
+    estadoApp.datos.usuario = null;
+
+    // Limpiar las tablas en la UI para que no se muestren datos viejos
+    document.getElementById('tablaClientes').innerHTML = '';
+    document.getElementById('tablaProductos').innerHTML = '';
+    document.getElementById('tablaVentas').innerHTML = '';
+    document.getElementById('tablaCompras').innerHTML = '';
 }
 
 export function actualizarEstadisticas() {

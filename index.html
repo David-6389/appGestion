@@ -10,10 +10,14 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles/styles.css">
 
 </head>
 <body>
+    <!-- Botón Hamburguesa para móvil -->
+    <button class="navbar-toggler d-md-none" type="button">
+        <span class="navbar-toggler-icon"></span>
+    </button>
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar Navigation -->
@@ -626,6 +630,9 @@
         </div>
     </div>
 
+    <!-- Overlay para el sidebar en móvil -->
+    <div class="sidebar-overlay d-md-none"></div>
+
     <!-- ===== MODALES ===== -->
 
     <!-- Modal Cliente -->
@@ -995,5 +1002,6 @@
     <script type="module" src="scripts/ventas.js"></script>
     <script type="module" src="scripts/compras.js"></script>
     <script type="module" src="scripts/reportes.js"></script>
+
 </body>
 </html>
